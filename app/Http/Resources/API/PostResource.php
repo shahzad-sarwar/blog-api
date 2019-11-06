@@ -22,6 +22,7 @@ class PostResource extends JsonResource
             'slug' => $this->slug,
             'body' => $this->body,
             'image' => $this->when($this->image !== null, env('APP_URL').Storage::url($this->image)),
+            'categories' => $this->categories,
             'auther' => new UserResource($this->author),
         ];
     }

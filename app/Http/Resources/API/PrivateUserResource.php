@@ -16,7 +16,7 @@ class PrivateUserResource extends UserResource
     public function toArray($request)
     {
          return array_merge(parent::toArray($request), [
-             'assigned_roles' => $this->roles->pluck('name'),
+             'assigned_roles' => $this->when(auth()->user()->hasAnyRole(['super-admin', 'manager']), $this->roles->pluck('name')),
         ]);
     }
 }
