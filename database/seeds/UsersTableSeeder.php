@@ -12,16 +12,13 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-    	factory(App\User::class)->create(['email' => 'admin@blog.com'])->each(function ($user) {
-    		$user->assignRole('super-admin');
-    	});
+    	$admin = factory(App\User::class)->create(['email' => 'admin@blog.com']);
+        $admin->assignRole('super-admin');
 
-    	factory(App\User::class)->create(['email' => 'manager@blog.com'])->each(function ($user) {
-    		$user->assignRole('manager');
-    	});
+    	$manager = factory(App\User::class)->create(['email' => 'manager@blog.com']);
+        $manager->assignRole('manager');
 
-    	factory(App\User::class)->create(['email' => 'user@blog.com'])->each(function ($user) {
-    		$user->assignRole('user');
-    	});
+    	$user = factory(App\User::class)->create(['email' => 'user@blog.com']);
+        $user->assignRole('user');
     }
 }

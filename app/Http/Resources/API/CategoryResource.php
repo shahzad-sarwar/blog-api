@@ -2,10 +2,9 @@
 
 namespace App\Http\Resources\API;
 
-use App\Http\Resources\API\UserResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PrivateUserResource extends UserResource
+class CategoryResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,8 +14,10 @@ class PrivateUserResource extends UserResource
      */
     public function toArray($request)
     {
-         return array_merge(parent::toArray($request), [
-             'assigned_roles' => $this->roles->pluck('name'),
-        ]);
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'slug' => $this->slug
+        ];
     }
 }
