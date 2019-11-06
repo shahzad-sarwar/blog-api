@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Post\PostRequest;
 use App\Http\Resources\API\PostResource;
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -37,8 +38,9 @@ class PostsController extends Controller
      */
     public function store(PostRequest $request)
     {
+        $category = Category::find($request->categories);
         $post = auth()->user()->posts()->create($request->validated());
-
+        $post->categories()->attach($category);
         return new PostResource($post);
     }
 
