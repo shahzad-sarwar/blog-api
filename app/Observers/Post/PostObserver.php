@@ -2,22 +2,23 @@
 
 namespace App\Observers\Post;
 
+use App\Handler\Images\StoreOrUpload;
 use App\Models\Post;
 use Illuminate\Support\Facades\Storage;
 
 
 class PostObserver
 {
-    /**
-     * Handle the post "created" event.
-     *
-     * @param  \App\Post  $post
-     * @return void
-     */
+    protected $dir = 'posts';
+    public function __construct(StoreOrUpload $imageHandler)
+    {
+        $this->imageHandler = $imageHandler;
+    }
+
     public function creating(Post $post)
     {
         if (request()->image !== null) {
-            $this->storeOrUploadImage($post);
+            $this->imageHandler->addOrUpdate($post, $this->dir);
         }
     }
 
@@ -31,17 +32,8 @@ class PostObserver
     {
         if (request()->image !== null) {
             Storage::disk('public')->delete($post->image);
-            $this->storeOrUploadImage($post);
+            $this->imageHandler->addOrUpdate($post, $this->dir);
         }
         $post->author_id = auth()->user()->id;
     }
-
-    protected function storeOrUploadImage($post)
-    {
-       $name = time().'.' . explode('/', explode(':', substr(request()->image, 0, strpos(request()->image, ';')))[1])[1];
-       $image = request()->image;
-       $key = 'posts' . '/' . $name;
-       Storage::disk('public')->put($key, file_get_contents($image));
-       $post->image = $key;
-   }
 }

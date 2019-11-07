@@ -24,10 +24,8 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $posts = Post::with('author', 'categories')->get();
-        return PostResource::collection(
-            $posts
-        );
+        $posts = Post::with(['author', 'categories'])->latest()->paginate(10);
+        return PostResource::collection($posts);
     }
 
     /**
@@ -67,15 +65,15 @@ class PostsController extends Controller
         $post = Post::findOrFail($id);
 
         if (!auth()->user()->hasRole(['super-admin|manager']) && $post->author_id !== auth()->user()->id) {
-            return response()->json(['message' => 'unauthenticaed'], 403);
+            return response()->json(['message' => 'unauthenticated'], 403);
         }
         
-        $post->update($request->only('title', 'slug', 'body'));
+        $post->update($request->validated());
         $category = Category::find($request->categories);
         $post->categories()->sync($category);
-    
+
         return new PostResource($post);
-    
+
     }
 
     /**
