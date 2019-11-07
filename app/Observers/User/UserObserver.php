@@ -22,6 +22,6 @@ class UserObserver
         if (request()->image !== null) {
             $this->imageHandler->addOrUpdate($user, $this->dir);
         }
-        $user->password =  Hash::make(request()->password);
+        $user->password =  Hash::make($user->password);
     }
 }

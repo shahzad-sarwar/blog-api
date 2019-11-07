@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\API;
 
+use App\Http\Resources\API\CategoryResource;
 use App\Http\Resources\API\UserResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -22,7 +23,7 @@ class PostResource extends JsonResource
             'slug' => $this->slug,
             'body' => $this->body,
             'image' => env('APP_URL').Storage::url($this->image),
-            'categories' => $this->categories,
+            'categories' => CategoryResource::collection($this->categories),
             'auther' => new UserResource($this->author),
         ];
     }

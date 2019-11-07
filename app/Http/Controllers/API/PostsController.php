@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Post\PostRequest;
+use App\Http\Requests\API\Post\PostUpdateRequest;
 use App\Http\Resources\API\PostResource;
 use App\Models\Category;
 use App\Models\Post;
@@ -60,7 +61,7 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(PostRequest $request, $id)
+    public function update(PostUpdateRequest $request, $id)
     {
         $post = Post::findOrFail($id);
 
@@ -84,6 +85,12 @@ class PostsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::findOrFail($id);
+        
+        if (!auth()->user()->hasRole(['super-admin|manager']) && $post->author_id !== auth()->user()->id) {
+            return response()->json(['message' => 'unauthenticated'], 403);
+        }
+        $post->delete();
+        return response()->json(null, 200);
     }
 }

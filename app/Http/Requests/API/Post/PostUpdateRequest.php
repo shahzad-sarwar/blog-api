@@ -4,6 +4,7 @@ namespace App\Http\Requests\API\Post;
 
 use App\Models\Post;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PostUpdateRequest extends FormRequest
 {
@@ -24,8 +25,7 @@ class PostUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        $post = Post::findOrFail($this)->first();
-        $id = $post->id;
+        $slug = $this->request->get("slug");
 
         return [
             'title' => 'required|string|max:255',
@@ -34,7 +34,7 @@ class PostUpdateRequest extends FormRequest
             'meta_title' => 'nullable|string|max:255',
             'meta_keywords' => 'nullable|string|max:500',
             'meta_description' => 'nullable|string|max:1000',
-            'slug' => 'required|unique:posts,slug,'. $id,
+            'slug' => ['required', Rule::unique('posts')->ignore($slug,'slug')],
         ];
     }
 }

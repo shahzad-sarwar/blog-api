@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Category\CategoryRequest;
+use App\Http\Requests\API\Category\CategoryUpdateRequest;
 use App\Http\Resources\API\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -11,8 +12,8 @@ use Illuminate\Http\Request;
 class CategoriesController extends Controller
 {
 
- public function __construct()
- {
+   public function __construct()
+   {
     $this->middleware(['role:super-admin|manager', 'auth:api'])->except('index', 'show');
 }
 
@@ -35,12 +36,16 @@ class CategoriesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CategoryRequest $request, Category $model)
+    public function store(CategoryRequest $request)
     {
-        $category = $model->create($request->only('title', 'slug'));
-        
-        return new CategoryResource($category);
+        $request->merge([
+           'slug' => str_slug($request->slug),
+           'user_id' => auth()->user()->id
+       ]);
 
+        $category = Category::create($request->only('title', 'slug', 'user_id'));
+
+        return new CategoryResource($category);
     }
 
     /**
@@ -51,6 +56,7 @@ class CategoriesController extends Controller
      */
     public function show(Category $category)
     {
+        $category->load('posts');
         return new CategoryResource($category);
     }
 
@@ -61,10 +67,16 @@ class CategoriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CategoryRequest $request, Category $category)
+    public function update(CategoryUpdateRequest $request, $id)
     {
+        $category = Category::findOrFail($id);
+
+        $request->merge([
+           'slug' => str_slug($request->slug),
+           'user_id' => auth()->user()->id
+       ]);
+
         $category->update($request->only('title', 'slug'));
-        
         return new CategoryResource($category);
     }
 
@@ -74,8 +86,9 @@ class CategoriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy($id)
     {
+        $category = Category::findOrFail($id);
         $category->delete();
         return response()->json(null, 200);
     }

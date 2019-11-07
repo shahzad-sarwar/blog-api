@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\API\Category;
 
+use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class CategoryRequest extends FormRequest
+class CategoryUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +25,10 @@ class CategoryRequest extends FormRequest
      */
     public function rules()
     {
-
+        $slug = $this->request->get("slug");
         return [
             'title' => 'required|min:3',
-            'slug' => 'unique:categories,slug'
+            'slug' => ['required', Rule::unique('categories')->ignore($slug,'slug')],
         ];
     }
 }

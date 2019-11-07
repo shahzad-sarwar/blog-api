@@ -20,6 +20,7 @@ class PostObserver
         if (request()->image !== null) {
             $this->imageHandler->addOrUpdate($post, $this->dir);
         }
+        $post->slug = str_slug($post->slug);
     }
 
     /**
@@ -35,5 +36,6 @@ class PostObserver
             $this->imageHandler->addOrUpdate($post, $this->dir);
         }
         $post->author_id = auth()->user()->id;
+        $post->slug = str_slug($post->slug);
     }
 }

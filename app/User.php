@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -48,6 +49,11 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
     }
 
     public function posts()

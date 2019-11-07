@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\API;
 
+use App\Http\Resources\API\PostResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CategoryResource extends JsonResource
@@ -17,7 +18,10 @@ class CategoryResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'slug' => $this->slug
+            'slug' => $this->slug,
+            'posts' => PostResource::collection(
+                $this->whenLoaded('posts')
+            ),
         ];
     }
 }
