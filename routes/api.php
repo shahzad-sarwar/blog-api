@@ -1,7 +1,4 @@
 <?php
-Route::get('testing', function() {
-    return 'a';
-});
 // Auth
 Route::post('register', 'Auth\\RegisterController@register');
 Route::post('login', 'Auth\\LoginController@login');
