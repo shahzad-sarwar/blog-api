@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests\API\Auth;
+namespace App\Http\Requests\API\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class RegisterRequest extends FormRequest
+class UserStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +28,13 @@ class RegisterRequest extends FormRequest
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
-            'image' => 'required|base64image'
+            'image' => 'sometimes|base64image',
+            'role_id' => [
+                'required',
+                Rule::exists('roles', 'id')->where( function ($builder)  {
+                    $builder->where('id', $this->request->get("role_id"));
+                })
+            ],
         ];
     }
 }

@@ -32,7 +32,6 @@ class PostObserver
     public function updating(Post $post)
     {
         if (request()->image !== null) {
-            Storage::disk('public')->delete($post->image);
             $this->imageHandler->addOrUpdate($post, $this->dir);
         }
         $post->author_id = auth()->user()->id;

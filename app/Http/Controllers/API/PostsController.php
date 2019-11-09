@@ -38,7 +38,11 @@ class PostsController extends Controller
     public function store(PostRequest $request)
     {
         $category = Category::find($request->categories);
-        $post = auth()->user()->posts()->create($request->validated());
+        
+        $post = auth()->user()->posts()->create(
+            $request->only('title', 'body', 'meta_title', 'meta_keywords', 'meta_description', 'slug')
+        );
+
         $post->categories()->attach($category);
         return new PostResource($post);
     }
@@ -64,12 +68,15 @@ class PostsController extends Controller
     public function update(PostUpdateRequest $request, $id)
     {
         $post = Post::findOrFail($id);
-
-        if (!auth()->user()->hasRole(['super-admin|manager']) && $post->author_id !== auth()->user()->id) {
+        
+        if (!$this->checkRoles($post)) {
             return response()->json(['message' => 'unauthenticated'], 403);
         }
-        
-        $post->update($request->validated());
+
+        $post->update(
+            $request->only('title', 'body', 'meta_title', 'meta_keywords', 'meta_description', 'slug')
+        );
+
         $category = Category::find($request->categories);
         $post->categories()->sync($category);
 
@@ -86,11 +93,17 @@ class PostsController extends Controller
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
-        
-        if (!auth()->user()->hasRole(['super-admin|manager']) && $post->author_id !== auth()->user()->id) {
+
+        if (!$this->checkRoles($post)) {
             return response()->json(['message' => 'unauthenticated'], 403);
         }
+
         $post->delete();
         return response()->json(null, 200);
     }
+
+     protected function checkRoles($post)
+     {
+         return auth()->user()->hasAnyRole(['super-admin|manager']) || $post->author_id === auth()->user()->id;
+     }
 }

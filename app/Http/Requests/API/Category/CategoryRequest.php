@@ -3,6 +3,7 @@
 namespace App\Http\Requests\API\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CategoryRequest extends FormRequest
 {
@@ -26,7 +27,7 @@ class CategoryRequest extends FormRequest
 
         return [
             'title' => 'required|min:3',
-            'slug' => 'unique:categories,slug'
+            'slug' => 'unique:categories,slug',
         ];
     }
 }

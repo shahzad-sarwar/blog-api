@@ -15,7 +15,7 @@ class CategoriesController extends Controller
    public function __construct()
    {
     $this->middleware(['role:super-admin|manager', 'auth:api'])->except('index', 'show');
-}
+    }
 
     /**
      * Display a listing of the resource.
@@ -38,12 +38,10 @@ class CategoriesController extends Controller
      */
     public function store(CategoryRequest $request)
     {
-        $request->merge([
-           'slug' => str_slug($request->slug),
-           'user_id' => auth()->user()->id
-       ]);
+        $this->mergeData($request);
 
-        $category = Category::create($request->only('title', 'slug', 'user_id'));
+       // $category = Category::create($request->only('title', 'slug', 'user_id'));
+        $category = auth()->user()->categories()->create($request->only('title', 'slug'));
 
         return new CategoryResource($category);
     }
@@ -56,7 +54,7 @@ class CategoriesController extends Controller
      */
     public function show(Category $category)
     {
-        $category->load('posts');
+        $category->load('user', 'posts');
         return new CategoryResource($category);
     }
 
@@ -70,12 +68,7 @@ class CategoriesController extends Controller
     public function update(CategoryUpdateRequest $request, $id)
     {
         $category = Category::findOrFail($id);
-
-        $request->merge([
-           'slug' => str_slug($request->slug),
-           'user_id' => auth()->user()->id
-       ]);
-
+        $this->mergeData($request);
         $category->update($request->only('title', 'slug'));
         return new CategoryResource($category);
     }
@@ -91,5 +84,13 @@ class CategoriesController extends Controller
         $category = Category::findOrFail($id);
         $category->delete();
         return response()->json(null, 200);
+    }
+
+    protected function mergeData($request)
+    {
+        $request->merge([
+           'slug' => str_slug($request->slug),
+           'user_id' => auth()->user()->id
+       ]);
     }
 }

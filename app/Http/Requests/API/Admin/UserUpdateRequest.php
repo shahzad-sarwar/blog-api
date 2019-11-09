@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\API\Category;
+namespace App\Http\Requests\API\Admin;
 
-use App\Models\Category;
+use App\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CategoryUpdateRequest extends FormRequest
+class UserUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,8 +26,10 @@ class CategoryUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|min:3',
-            'slug' => ['required', Rule::unique('categories', 'slug')->ignore($this->slug)],
+            'name' => 'required',
+            'email' => ['email', Rule::unique('users', 'email')->ignore($this->user->id)],
+            'password' => 'required|min:6',
+            'image' => 'sometimes|base64image',
         ];
     }
 }

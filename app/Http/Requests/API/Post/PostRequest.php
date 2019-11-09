@@ -29,7 +29,9 @@ class PostRequest extends FormRequest
             'meta_title' => 'nullable|string|max:255',
             'meta_keywords' => 'nullable|string|max:500',
             'meta_description' => 'nullable|string|max:1000',
-            'slug' => 'required|unique:posts,slug'
+            'slug' => 'required|unique:posts,slug',
+            'categories' => 'required|array',
+            'categories.*.id' => 'required|exists:categories,id',
         ];
     }
 }

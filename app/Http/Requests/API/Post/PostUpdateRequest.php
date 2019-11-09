@@ -30,11 +30,13 @@ class PostUpdateRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'body' => 'required|string|max:5000',
-            'image' => 'required',
+            'image' => 'required|base64Image',
             'meta_title' => 'nullable|string|max:255',
             'meta_keywords' => 'nullable|string|max:500',
             'meta_description' => 'nullable|string|max:1000',
             'slug' => ['required', Rule::unique('posts')->ignore($slug,'slug')],
+            'categories' => 'required|array',
+            'categories.*.id' => 'required|exists:categories,id',
         ];
     }
 }
